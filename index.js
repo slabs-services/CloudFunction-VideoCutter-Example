@@ -50,7 +50,7 @@ async function main() {
         partName
     ], 'cutter');
 
-    await uploadVideo("urn:slabs:bytelake:cosmic-potato", partName);
+    await uploadVideo(process.env.DESTINATION_LAKE, partName);
 
     console.log('Video generated successfully');
 }
