@@ -66,7 +66,7 @@ async function main() {
         html: `<p>Your video has been processed and is available: <a href="http://assets.epictv.pt/${fileName}" target="_blank">Click to watch</a></p>`
     });
 
-    console.log('Video generated successfully');
+    console.log('Video generated successfully and email sent!');
 }
 
 main().catch(err => {
