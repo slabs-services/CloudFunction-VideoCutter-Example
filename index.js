@@ -57,7 +57,7 @@ async function main() {
     destinations.push(process.env.EMAIL_TO);
 
     await SendMail({
-        outbockId: process.env.OUTBOX_ID,
+        outboxId: process.env.OUTBOX_ID,
         from: "notifications",
         fromName: "EpicTV Notifications",
         to: destinations,
