@@ -2,7 +2,8 @@ import { spawn } from 'child_process';
 import { config } from 'dotenv';
 import fs from 'fs';
 import { pipeline } from 'stream/promises';
-import { GetObject, PutObject } from "@spacelabs-cloud/cosmic";
+import { GetObject, PutObject } from "@spacelabs-cloud/cosmic/bytelake";
+import { SendMail } from "@spacelabs-cloud/cosmic/raven";
 
 config();
 
@@ -34,7 +35,7 @@ function spawnFFmpeg(args, label) {
 async function uploadVideo(lakeName, videoName) {
     const res = await PutObject(lakeName, fs.createReadStream(videoName), videoName);
 
-    console.log('Upload result:', res);
+    return res.fileName;
 }
 
 async function main() {
@@ -50,7 +51,20 @@ async function main() {
         partName
     ], 'cutter');
 
-    await uploadVideo(process.env.DESTINATION_LAKE, partName);
+    const fileName = await uploadVideo(process.env.DESTINATION_LAKE, partName);
+
+    const destinations = [];
+    destinations.push(process.env.EMAIL_TO);
+
+    await SendMail({
+        outbockId: process.env.OUTBOX_ID,
+        from: "notifications",
+        fromName: "EpicTV Notifications",
+        to: destinations,
+        subject: 'Your video is ready',
+        text: `Your video has been processed and is available at: http://assets.epictv.pt/${fileName}`,
+        html: `<p>Your video has been processed and is available: <a href="http://assets.epictv.pt/${fileName}" target="_blank">Click to watch</a></p>`
+    });
 
     console.log('Video generated successfully');
 }
